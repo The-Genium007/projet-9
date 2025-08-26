@@ -2,6 +2,25 @@ import { ROUTES_PATH } from '../constants/routes.js'
 import { formatDate, formatStatus } from "../app/format.js"
 import Logout from "./Logout.js"
 
+/**
+ * Comportement attendu (Bills):
+ * - Cette classe pilote l’écran liste des notes de frais.
+ * - Initialisation:
+ *   - Bouton “Nouvelle note” (data-testid="btn-new-bill"): déclenche la navigation vers ROUTES_PATH.NewBill.
+ *   - Icônes œil (data-testid="icon-eye"): affichent le justificatif dans une modale (jQuery) au clic.
+ * - handleClickNewBill: navigue vers l’écran NewBill.
+ * - handleClickIconEye:
+ *   - Récupère l’URL de la facture depuis data-bill-url.
+ *   - Calcule une largeur d’image à 50% de la largeur de la modale #modaleFile.
+ *   - Insère l’image dans .modal-body et ouvre la modale via $('#modaleFile').modal('show').
+ * - getBills:
+ *   - Appelle store.bills().list() pour récupérer la collection.
+ *   - Formate chaque entrée: date via formatDate (fallback en cas d’erreur), status via formatStatus.
+ *   - Retourne le tableau formaté.
+ * - Comportement en erreur (niveau container):
+ *   - Les erreurs de list() ne sont pas traitées ici; l’UI d’erreur est gérée au niveau du Router/Views.
+ */
+
 export default class {
   constructor({ document, onNavigate, store, localStorage }) {
     this.document = document
@@ -42,9 +61,6 @@ export default class {
                 status: formatStatus(doc.status)
               }
             } catch(e) {
-              // if for some reason, corrupted data was introduced, we manage here failing formatDate function
-              // log the error and return unformatted date in that case
-              console.log(e,'for',doc)
               return {
                 ...doc,
                 date: doc.date,
@@ -52,7 +68,6 @@ export default class {
               }
             }
           })
-          console.log('length', bills.length)
         return bills
       })
     }

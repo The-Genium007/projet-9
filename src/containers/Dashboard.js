@@ -75,6 +75,16 @@ export default class {
     $('#arrow-icon1').click((e) => this.handleShowTickets(e, bills, 1))
     $('#arrow-icon2').click((e) => this.handleShowTickets(e, bills, 2))
     $('#arrow-icon3').click((e) => this.handleShowTickets(e, bills, 3))
+    
+    // Gestion des clics sur les tickets
+    $(document).on('click', '[id^="open-bill"]', (e) => {
+      const billId = e.currentTarget.id.replace('open-bill', '')
+      const bill = bills.find(b => b.id === billId)
+      if (bill) {
+        this.handleEditTicket(e, bill, bills)
+      }
+    })
+    
     new Logout({ localStorage, onNavigate })
   }
 
@@ -144,10 +154,6 @@ export default class {
         .html("")
       this.counter ++
     }
-
-    bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-    })
 
     return bills
 
